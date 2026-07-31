@@ -348,7 +348,7 @@
         }
     });
 
-    // 2. Fungsi Kirim Form ke Google Sheets
+    // 2. Kirim Form
     form.addEventListener('submit', (e) => {
         e.preventDefault(); 
         
@@ -375,22 +375,20 @@
             foto: photoDataInput.value
         };
 
+        // Kirim data ke Google Apps Script
         fetch(scriptURL, {
             method: 'POST',
             mode: 'no-cors',
             body: JSON.stringify(payload),
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         })
-       .then(() => {
-            // 1. Tampilkan pesan berhasil
+        .then(() => {
             alert("Berhasil! Data buku tamu Anda telah tersimpan.");
             
-            // 2. Reset formulir (opsional)
-            form.reset();
-            photoPreview.style.display = 'none';
-            
-            // 3. Arahkan user ke website Desa Kesiut
-            window.location.href = "https://kesiut.desa.id/"; 
+            // Jeda 300ms untuk memastikan proses pengalihan halaman dipanggil dengan lancar
+            setTimeout(() => {
+                window.location.href = "https://kesiut.desa.id";
+            }, 300);
         })
         .catch(error => {
             console.error('Error:', error);
