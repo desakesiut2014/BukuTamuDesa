@@ -381,11 +381,16 @@
             body: JSON.stringify(payload),
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         })
-        .then(() => {
+       .then(() => {
+            // 1. Tampilkan pesan berhasil
             alert("Berhasil! Data buku tamu Anda telah tersimpan.");
+            
+            // 2. Reset formulir (opsional)
             form.reset();
             photoPreview.style.display = 'none';
-            window.location.reload(); 
+            
+            // 3. Arahkan user ke website Desa Kesiut
+            window.location.href = "https://kesiut.desa.id"; 
         })
         .catch(error => {
             console.error('Error:', error);
