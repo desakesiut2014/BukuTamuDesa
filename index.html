@@ -7,14 +7,11 @@
     <style>
      body {
         font-family: Arial, sans-serif;
-        
-        /* Ganti URL di bawah ini dengan link gambar Anda */
         background-image: url('https://github.com/operatordesakesiut-hash/BukuTamuDesa/blob/main/KantorDesa.jpeg?raw=true'); 
-        
-        background-size: cover;       /* Memaksa gambar menutupi seluruh layar */
-        background-position: center;  /* Posisi gambar pas di tengah */
-        background-repeat: no-repeat; /* Mencegah gambar berulang/berpetak-petak */
-        background-attachment: fixed; /* Gambar tidak ikut tergulung saat halaman di-scroll */
+        background-size: cover;       
+        background-position: center;  
+        background-repeat: no-repeat; 
+        background-attachment: fixed; 
 
         display: flex;
         justify-content: center;
@@ -29,7 +26,7 @@
         max-width: 500px;
     }
 
-    /* Style Khusus Gambar / Logo Desa */
+    /* Style Logo Desa */
     .logo-container {
         text-align: center;
         margin-bottom: 15px;
@@ -39,7 +36,7 @@
         height: auto;
         border-radius: 0;
         background-color: transparent;
-        mix-blend-mode: multiply; /* <-- Tambahkan baris ini */
+        mix-blend-mode: multiply;
     }
 
     h2 {
@@ -58,16 +55,17 @@
         color: #444;
         font-size: 14px;
     }
-    input[type="text"], input[type="tel"], textarea, select {
+    input[type="text"], input[type="tel"], textarea, select, input[type="file"] {
         width: 100%;
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 5px;
         box-sizing: border-box;
         font-family: inherit;
+        background: #fff;
     }
 
-    /* Radio Button Group (Sejajar & Rapi) */
+    /* Radio Button Group */
     .radio-group {
         display: flex;
         gap: 20px;
@@ -82,12 +80,8 @@
         cursor: pointer;
         font-size: 14px;
     }
-    .radio-item input[type="radio"] {
-        margin: 0;
-        cursor: pointer;
-    }
 
-    /* Style Khusus Bagian Kamera & Preview Foto Hasil Tangkapan */
+    /* Style Bagian Kamera & Preview Foto */
     .camera-container {
         text-align: center;
         margin-top: 20px;
@@ -96,15 +90,12 @@
         border-radius: 8px;
         background-color: #fafafa;
     }
-    /* Selector diperjelas agar HANYA berdampak pada video/foto kamera */
-    .camera-container video, 
-    .camera-container canvas, 
     .camera-container img {
         width: 100%;
         max-width: 320px;
         border-radius: 8px;
-        background-color: #000;
-        margin-bottom: 10px;
+        margin-top: 10px;
+        display: none;
     }
 
     /* Style Tombol */
@@ -121,12 +112,6 @@
         margin-top: 15px;
         transition: 0.3s;
     }
-    .btn-camera {
-        background-color: #007bff;
-        margin-top: 0;
-        font-size: 14px;
-        padding: 10px;
-    }
     .btn:hover {
         opacity: 0.85;
     }
@@ -139,8 +124,6 @@
 <body>
 
 <div class="container">
-    
-    <!-- TAG GAMBAR / LOGO DESA -->
     <div class="logo-container">
         <img src="https://github.com/operatordesakesiut-hash/BukuTamuDesa/blob/main/KopDesaKesiut.png?raw=true" alt="Logo Desa Kesiut">
     </div>
@@ -148,7 +131,7 @@
     <h2>Formulir Buku Tamu Desa Kesiut</h2>
     <form id="guestbookForm">
         
-        <!-- Pilihan Kategori dengan Radio Button -->
+        <!-- Pilihan Kategori -->
         <div class="form-group">
             <label>Kategori:</label>
             <div class="radio-group">
@@ -208,14 +191,17 @@
             <textarea id="saran" name="saran" rows="3" required placeholder="Tulis saran & masukan Anda di sini"></textarea>
         </div>
 
-        <!-- Bagian Kamera -->
+        <!-- Bagian Kamera Baru yang Garansi Bebas Error di HP -->
         <div class="camera-container">
-            <label style="margin-bottom: 10px;">Dokumentasi / Foto Diri (Wajib):</label>
-            <video id="video" autoplay playsinline></video>
-            <canvas id="canvas" style="display: none;"></canvas>
-            <img id="photoPreview" style="display: none;" alt="Hasil Foto">
+            <label for="cameraInput">📸 Ambil / Ambil Foto Diri (Wajib):</label>
             
-            <button type="button" id="snapBtn" class="btn btn-camera">📸 Ambil Foto Diri</button>
+            <!-- Atribut capture="user" otomatis membuka kamera depan HP -->
+            <input type="file" id="cameraInput" accept="image/*" capture="user" required>
+            
+            <!-- Elemen Preview Foto -->
+            <img id="photoPreview" alt="Hasil Foto Dokumentasi">
+            
+            <!-- Input Hidden Penyimpan Data Gambar -->
             <input type="hidden" id="photoData" name="photoData" required>
         </div>
 
@@ -224,71 +210,31 @@
 </div>
 
 <script>
-    // ⚠️ PASTIKAN MENGGANTI URL DI BAWAH DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+    // ⚠️ MENGGANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
     const scriptURL = 'MASUKKAN_URL_WEB_APP_ANDA_DI_SINI'; 
 
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const snapBtn = document.getElementById('snapBtn');
+    const cameraInput = document.getElementById('cameraInput');
     const photoPreview = document.getElementById('photoPreview');
     const photoDataInput = document.getElementById('photoData');
     const form = document.getElementById('guestbookForm');
     const submitBtn = document.getElementById('submitBtn');
 
-    // 1. Inisialisasi Kamera Ramah Browser HP
-    async function startCamera() {
-        try {
-            const constraints = {
-                video: {
-                    facingMode: 'user', // Kamera depan
-                    width: { ideal: 640 },
-                    height: { ideal: 480 }
-                }
+    // 1. Konversi Gambar ke Base64 Secara Otomatis
+    cameraInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const dataURL = event.target.result;
+                photoPreview.src = dataURL;
+                photoPreview.style.display = 'block';
+                photoDataInput.value = dataURL; // Simpan teks foto ke input hidden
             };
-
-            const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            video.srcObject = stream;
-            
-            // Wajib untuk browser HP/iOS agar tidak terblokir
-            video.setAttribute("playsinline", true); 
-            video.play();
-        } catch (err) {
-            console.error("Error Akses Kamera:", err);
-            alert("Gagal mengakses kamera. Pastikan browser diizinkan menggunakan kamera pada Pengaturan HP Anda.");
-        }
-    }
-
-    // Jalankan kamera saat halaman selesai dimuat
-    startCamera();
-
-    // 2. Fungsi Mengambil Gambar & Reset
-    snapBtn.addEventListener('click', () => {
-        if (video.style.display !== 'none') {
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const dataURL = canvas.toDataURL('image/png');
-            
-            // Tampilkan hasil foto & sembunyikan video live
-            photoPreview.src = dataURL;
-            photoPreview.style.display = 'block';
-            video.style.display = 'none';
-            photoDataInput.value = dataURL; // Simpan teks Base64 ke input hidden
-            
-            snapBtn.innerText = "🔄 Ambil Ulang Foto";
-        } else {
-            // Reset ke tampilan kamera aktif
-            photoPreview.style.display = 'none';
-            video.style.display = 'block';
-            photoDataInput.value = "";
-            snapBtn.innerText = "📸 Ambil Foto Diri";
+            reader.readAsDataURL(file);
         }
     });
 
-    // 3. Fungsi Kirim Form ke Google Sheets
+    // 2. Fungsi Kirim Form ke Google Sheets
     form.addEventListener('submit', (e) => {
         e.preventDefault(); 
         
@@ -300,7 +246,6 @@
         submitBtn.innerText = "⏳ Sedang Menyimpan Data...";
         submitBtn.disabled = true;
 
-        // Mengumpulkan semua data dari form HTML
         const payload = {
             kategori: document.querySelector('input[name="kategori"]:checked')?.value || '',
             nama: document.getElementById('nama')?.value || '',
@@ -313,7 +258,6 @@
             foto: photoDataInput.value
         };
 
-        // Kirim data via fetch API
         fetch(scriptURL, {
             method: 'POST',
             body: JSON.stringify(payload),
@@ -324,6 +268,7 @@
             if (data.result === 'success') {
                 alert("Berhasil! Data buku tamu Anda telah tersimpan.");
                 form.reset();
+                photoPreview.style.display = 'none';
                 window.location.reload(); 
             } else {
                 alert("Terjadi kesalahan: " + (data.error || "Gagal menyimpan"));
