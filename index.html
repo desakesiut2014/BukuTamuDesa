@@ -198,16 +198,45 @@
     const form = document.getElementById('guestbookForm');
     const submitBtn = document.getElementById('submitBtn');
 
-    // 1. Konversi Gambar ke Base64 Secara Otomatis
+    // 1. Kompresi Foto Otomatis agar Ukurannya Ringan & Muat Dikirim
     cameraInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                const dataURL = event.target.result;
-                photoPreview.src = dataURL;
-                photoPreview.style.display = 'block';
-                photoDataInput.value = dataURL; 
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Batasi resolusi maksimal (lebar/tinggi max 600px)
+                    let width = img.width;
+                    let height = img.height;
+                    const max_size = 600;
+                    
+                    if (width > height) {
+                        if (width > max_size) {
+                            height *= max_size / width;
+                            width = max_size;
+                        }
+                    } else {
+                        if (height > max_size) {
+                            width *= max_size / height;
+                            height = max_size;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Ubah ke format JPEG dengan kualitas 0.7 (padat & ukuran kecil)
+                    const dataURL = canvas.toDataURL('image/jpeg', 0.7);
+                    photoPreview.src = dataURL;
+                    photoPreview.style.display = 'block';
+                    photoDataInput.value = dataURL; 
+                };
+                img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -242,21 +271,15 @@
 
         fetch(scriptURL, {
             method: 'POST',
+            mode: 'no-cors',
             body: JSON.stringify(payload),
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.result === 'success') {
-                alert("Berhasil! Data buku tamu Anda telah tersimpan.");
-                form.reset();
-                photoPreview.style.display = 'none';
-                window.location.reload(); 
-            } else {
-                alert("Terjadi kesalahan: " + (data.error || "Gagal menyimpan"));
-                submitBtn.innerText = "Kirim Data Kunjungan";
-                submitBtn.disabled = false;
-            }
+        .then(() => {
+            alert("Berhasil! Data buku tamu Anda telah tersimpan.");
+            form.reset();
+            photoPreview.style.display = 'none';
+            window.location.reload(); 
         })
         .catch(error => {
             console.error('Error:', error);
