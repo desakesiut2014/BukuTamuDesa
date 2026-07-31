@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Tamu Desa Kesiut</title>
+    <style>
+     body {
+        font-family: Arial, sans-serif;
+        background-image: url('https://github.com/operatordesakesiut-hash/BukuTamuDesa/blob/main/KantorDesa.jpeg?raw=true'); 
+        background-size: cover;       
+        background-position: center;  
+        background-repeat: no-repeat; 
+        background-attachment: fixed; 
+
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+    .container {
+        background: #f5f0f0e4;
+        padding: 25px 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        width: 100%;
+        max-width: 500px;
+    }
+
+    /* Style Logo Desa */
+    .logo-container {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    .logo-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0;
+        background-color: transparent;
+        mix-blend-mode: multiply;
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+        margin-top: 0;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: bold;
+        color: #444;
+        font-size: 14px;
+    }
+    input[type="text"], input[type="tel"], textarea, select, input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-family: inherit;
+        background: #fff;
+    }
+
+    /* Radio Button Group */
+    .radio-group {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        margin-top: 8px;
+    }
+
+    /* Style Bagian Kamera & Preview Foto */
+    .camera-container {
+        text-align: center;
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px dashed #aaa;
+        border-radius: 8px;
+        background-color: #fafafa;
+    }
+    .camera-container img {
+        width: 100%;
+        max-width: 320px;
+        border-radius: 8px;
+        margin-top: 10px;
+        display: none;
+    }
+
+    /* Style Tombol */
+    .btn {
+        background-color: #28a745;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 15px;
+        transition: 0.3s;
+    }
+    .btn:hover {
+        opacity: 0.85;
+    }
+    .btn:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-container">
+        <img src="https://github.com/operatordesakesiut-hash/BukuTamuDesa/blob/main/KopDesaKesiut.png?raw=true" alt="Logo Desa Kesiut">
+    </div>
+
+    <h2>Formulir Buku Tamu Desa Kesiut</h2>
+    <form id="guestbookForm">
+
+        <!-- Pilihan Kategori -->
+        <div class="form-group">
+            <label>Kategori:</label>
+            <div class="radio-group">
+                <input type="radio" id="kategori_khusus" name="kategori" value="Khusus">
+                <label for="kategori_khusus">Khusus</label>
+
+                <input type="radio" id="kategori_umum" name="kategori" value="Umum" required>
+                <label for="kategori_umum">Umum</label>
+            </div>
+
+            <div style="margin-top: 6px; font-size: 12px; color: #666; line-height: 1.4;">
+                <span>* <b>Umum :</b> Tercatat sebagai bukan Instansi / Lembaga</span><br>
+                <span>* <b>Khusus:</b> Tercatat sebagai Instansi / Lembaga</span>
+            </div>
+        </div>
+
+        <!-- Form Nama Instansi / Lembaga / Perorangan (Wajib Diisi) -->
+        <div class="form-group" id="containerInstansi">
+            <label for="namaInstansiLembaga">Nama Instansi / Lembaga / Perorangan Yang Diwakili:</label>
+            <input type="text" id="namaInstansiLembaga" name="namaInstansiLembaga" required placeholder="Contoh: Dinas / Pribadi / Komunitas">
+        </div>
+        
+        <div class="form-group">
+            <label for="nama">Nama Lengkap:</label>
+            <input type="text" id="nama" name="nama" required placeholder="Contoh: Budi Santoso">
+        </div>
+
+        <div class="form-group">
+            <label for="alamat">Alamat:</label>
+            <textarea id="alamat" name="alamat" rows="2" required placeholder="Masukkan alamat lengkap"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="jabatan">Jabatan / Pekerjaan:</label>
+            <input type="text" id="jabatan" name="jabatan" required placeholder="Contoh: Manager / Wiraswasta">
+        </div>
+
+         <div class="form-group">
+            <label for="tujuan">Tujuan Kunjungan:</label>
+            <input type="text" id="tujuan" name="tujuan" required placeholder="Contoh: Rapat koordinasi / Kunjungan kerja">
+        </div>
+
+        <div class="form-group">
+            <label for="no_wa">No WA / Telepon:</label>
+            <input type="tel" id="no_wa" name="no_wa" required placeholder="Contoh: 081234567890">
+        </div>
+
+        <div class="form-group">
+            <label for="saran">Saran dan Masukan:</label>
+            <textarea id="saran" name="saran" rows="3" required placeholder="Tulis saran & masukan Anda di sini"></textarea>
+        </div>
+
+        <!-- Bagian Kamera -->
+        <div class="camera-container">
+            <label for="cameraInput">📸 Ambil / Ambil Foto Diri (Wajib):</label>
+            <input type="file" id="cameraInput" accept="image/*" capture="user" required>
+            <img id="photoPreview" alt="Hasil Foto Dokumentasi">
+            <input type="hidden" id="photoData" name="photoData" required>
+        </div>
+
+        <button type="submit" class="btn" id="submitBtn">Kirim Data Kunjungan</button>
+    </form>
+</div>
+
+<script>
+    // ⚠️ GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxNScmC8J4NixkqrIE3VkhltjmzvOxhfnDioCPpa0bqPFv5ri43dK610YoF15dbJ8hcNw/exec'; 
+
+    const cameraInput = document.getElementById('cameraInput');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoDataInput = document.getElementById('photoData');
+    const form = document.getElementById('guestbookForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // 1. Konversi Gambar ke Base64 Secara Otomatis
+    cameraInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const dataURL = event.target.result;
+                photoPreview.src = dataURL;
+                photoPreview.style.display = 'block';
+                photoDataInput.value = dataURL; 
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // 2. Fungsi Kirim Form ke Google Sheets
+    form.addEventListener('submit', (e) => {
+        e.preventDefault(); 
+        
+        if (!photoDataInput.value) {
+            alert("Mohon ambil foto dokumentasi diri Anda terlebih dahulu!");
+            return;
+        }
+
+        submitBtn.innerText = "⏳ Sedang Menyimpan Data...";
+        submitBtn.disabled = true;
+
+        const kategoriSelected = document.querySelector('input[name="kategori"]:checked')?.value || '';
+
+        const payload = {
+            kategori: kategoriSelected,
+            nama: document.getElementById('nama')?.value || '',
+            alamat: document.getElementById('alamat')?.value || '',
+            jabatan: document.getElementById('jabatan')?.value || '',
+            jenis_instansi: kategoriSelected === 'Khusus' ? 'Instansi / Lembaga' : 'Perorangan',
+            nama_instansi: document.getElementById('namaInstansiLembaga')?.value || '', 
+            tujuan: document.getElementById('tujuan')?.value || '',
+            no_wa: document.getElementById('no_wa')?.value || '',
+            saran: document.getElementById('saran')?.value || '',
+            foto: photoDataInput.value
+        };
+
+        fetch(scriptURL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result === 'success') {
+                alert("Berhasil! Data buku tamu Anda telah tersimpan.");
+                form.reset();
+                photoPreview.style.display = 'none';
+                window.location.reload(); 
+            } else {
+                alert("Terjadi kesalahan: " + (data.error || "Gagal menyimpan"));
+                submitBtn.innerText = "Kirim Data Kunjungan";
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Gagal mengirim data. Pastikan koneksi internet Anda stabil.");
+            submitBtn.innerText = "Kirim Data Kunjungan";
+            submitBtn.disabled = false;
+        });
+    });
+</script>
+
+</body>
+</html>
