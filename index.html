@@ -224,7 +224,7 @@
 </div>
 
 <script>
-    // Konfigurasi URL Google Apps Script Anda (PASTIKAN MENGGANTI INI)
+    // ⚠️ PASTIKAN MENGGANTI URL DI BAWAH DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
     const scriptURL = 'MASUKKAN_URL_WEB_APP_ANDA_DI_SINI'; 
 
     const video = document.getElementById('video');
@@ -235,35 +235,52 @@
     const form = document.getElementById('guestbookForm');
     const submitBtn = document.getElementById('submitBtn');
 
-    // 1. Inisialisasi Kamera
+    // 1. Inisialisasi Kamera Ramah Browser HP
     async function startCamera() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            const constraints = {
+                video: {
+                    facingMode: 'user', // Kamera depan
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }
+            };
+
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
+            
+            // Wajib untuk browser HP/iOS agar tidak terblokir
+            video.setAttribute("playsinline", true); 
+            video.play();
         } catch (err) {
-            console.error("Error: ", err);
-            alert("Harap izinkan akses kamera pada browser Anda agar bisa mengambil dokumentasi.");
+            console.error("Error Akses Kamera:", err);
+            alert("Gagal mengakses kamera. Pastikan browser diizinkan menggunakan kamera pada Pengaturan HP Anda.");
         }
     }
+
+    // Jalankan kamera saat halaman selesai dimuat
     startCamera();
 
-    // 2. Fungsi Mengambil Gambar
+    // 2. Fungsi Mengambil Gambar & Reset
     snapBtn.addEventListener('click', () => {
-        if(video.style.display !== 'none') {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+        if (video.style.display !== 'none') {
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            
             const context = canvas.getContext('2d');
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
             const dataURL = canvas.toDataURL('image/png');
             
+            // Tampilkan hasil foto & sembunyikan video live
             photoPreview.src = dataURL;
             photoPreview.style.display = 'block';
             video.style.display = 'none';
-            photoDataInput.value = dataURL;
+            photoDataInput.value = dataURL; // Simpan teks Base64 ke input hidden
             
             snapBtn.innerText = "🔄 Ambil Ulang Foto";
         } else {
-            // Reset kamera jika klik ambil ulang
+            // Reset ke tampilan kamera aktif
             photoPreview.style.display = 'none';
             video.style.display = 'block';
             photoDataInput.value = "";
@@ -271,7 +288,7 @@
         }
     });
 
-    // 3. Fungsi Kirim Form
+    // 3. Fungsi Kirim Form ke Google Sheets
     form.addEventListener('submit', (e) => {
         e.preventDefault(); 
         
@@ -283,20 +300,20 @@
         submitBtn.innerText = "⏳ Sedang Menyimpan Data...";
         submitBtn.disabled = true;
 
-        // Mengumpulkan semua data input
+        // Mengumpulkan semua data dari form HTML
         const payload = {
-            kategori: document.querySelector('input[name="kategori"]:checked').value,
-            nama: document.getElementById('nama').value,
-            alamat: document.getElementById('alamat').value,
-            jabatan: document.getElementById('jabatan').value,
-            jenis_instansi: document.querySelector('input[name="jenis_instansi"]:checked').value,
-            tujuan: document.getElementById('tujuan').value,
-            no_wa: document.getElementById('no_wa').value,
-            saran: document.getElementById('saran').value,
+            kategori: document.querySelector('input[name="kategori"]:checked')?.value || '',
+            nama: document.getElementById('nama')?.value || '',
+            alamat: document.getElementById('alamat')?.value || '',
+            jabatan: document.getElementById('jabatan')?.value || '',
+            jenis_instansi: document.querySelector('input[name="jenis_instansi"]:checked')?.value || '',
+            tujuan: document.getElementById('tujuan')?.value || '',
+            no_wa: document.getElementById('no_wa')?.value || '',
+            saran: document.getElementById('saran')?.value || '',
             foto: photoDataInput.value
         };
 
-        // Kirim ke Google Script
+        // Kirim data via fetch API
         fetch(scriptURL, {
             method: 'POST',
             body: JSON.stringify(payload),
@@ -304,12 +321,12 @@
         })
         .then(response => response.json())
         .then(data => {
-            if(data.result === 'success') {
+            if (data.result === 'success') {
                 alert("Berhasil! Data buku tamu Anda telah tersimpan.");
                 form.reset();
                 window.location.reload(); 
             } else {
-                alert("Terjadi kesalahan: " + data.error);
+                alert("Terjadi kesalahan: " + (data.error || "Gagal menyimpan"));
                 submitBtn.innerText = "Kirim Data Kunjungan";
                 submitBtn.disabled = false;
             }
