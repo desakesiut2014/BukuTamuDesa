@@ -297,6 +297,13 @@
 </div>
 
 <script>
+
+// Filter khusus No WA: Hanya mengizinkan angka
+const noWaInput = document.getElementById('no_wa');
+noWaInput.addEventListener('input', function (e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+});
+    
     // URL Web App Google Apps Script Anda
     const scriptURL = 'https://script.google.com/macros/s/AKfycbykymIvZ0IJ7WUDFBqt4zjixXg6aoEkRstgJA1iFlQ1EcBBp0Y1V85XszjJcr9fn-3WEg/exec'; 
 
